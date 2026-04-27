@@ -1,0 +1,25 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.venv/
+venv/
+.env
+.ipynb_checkpoints/
+.pytest_cache/
+
+# Build / logs
+*.log
+
+# Local datasets and generated frame data
+data/benchmark/
+data/custom/raw_videos/
+data/custom/extracted_frames/
+
+# Large experiment artifacts
+outputs/checkpoints/
+outputs/logs/
+outputs/demos/
