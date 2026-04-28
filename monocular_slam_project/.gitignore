@@ -23,3 +23,19 @@ data/custom/extracted_frames/
 outputs/checkpoints/
 outputs/logs/
 outputs/demos/
+
+# ORB-SLAM3 local clone/build artifacts
+src/models/orb_slam3/
+
+# ORB-SLAM3 generated adapter inputs
+outputs/trajectories/orb_slam3/*/kitti_input/
+outputs/trajectories/orb_slam3/*/run_command.txt
+
+# Native/CMake build artifacts
+build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+*.dylib
+*.a
