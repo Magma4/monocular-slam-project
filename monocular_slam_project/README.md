@@ -1,58 +1,92 @@
 # Monocular SLAM / Visual Odometry Semester Project
 
-This repository contains a semester project on monocular visual odometry and SLAM-style localization. The current implementation focuses on **DeepVO**, a learning-based monocular visual odometry model that estimates camera motion from image sequences.
+This repository contains a semester project on monocular visual odometry and SLAM-style localization. It compares two approaches on custom monocular video frame sequences:
 
-The project is organized to support custom video experiments, KITTI benchmark testing, trajectory visualization, report writing, and future comparison with ORB-SLAM3.
+- **DeepVO**: a learning-based monocular visual odometry baseline.
+- **ORB-SLAM3**: a classical feature-based monocular SLAM baseline.
+
+The project is organized for custom video preprocessing, KITTI benchmark experiments, trajectory visualization, report writing, and lightweight pseudo-real-time demos.
 
 ## Objectives
 
-- Study monocular camera motion estimation using visual odometry.
-- Run DeepVO on custom videos and benchmark data.
-- Compare random-weight and trained-checkpoint behavior.
-- Generate trajectory CSV files and plots for analysis.
-- Prepare the project structure for a later ORB-SLAM3 comparison.
+- Study monocular camera motion estimation using visual odometry and SLAM.
+- Run DeepVO on custom videos and KITTI odometry data.
+- Run ORB-SLAM3 on the same custom frame sequences as a classical SLAM baseline.
+- Generate trajectory outputs, plots, notebooks, and report-ready summaries.
+- Compare qualitative behavior, setup complexity, drift, and tracking stability.
+
+## Real-Time-Style Demos
+
+These demos are **pseudo-real-time visualizations**. They replay existing extracted frames and reveal saved trajectory outputs over time. They are not live model inference or live SLAM tracking.
+
+### DeepVO Replay Demo
+
+DeepVO replays the indoor custom frame sequence while updating the trained DeepVO predicted trajectory.
+
+<img src="assets/demo_gifs/deepvo_realtime_demo_readme.gif" alt="DeepVO pseudo-real-time trajectory replay demo" width="640">
+
+Run locally with:
+
+```bash
+.venv/bin/python scripts/visualization/deepvo_realtime_demo.py
+```
+
+### ORB-SLAM3 Replay Demo
+
+ORB-SLAM3 replays the indoor custom frame sequence while updating the saved ORB-SLAM3 keyframe trajectory. The ORB-SLAM3 workflow uses headless mode on macOS because the Pangolin viewer crashes due to macOS main-thread GUI handling.
+
+<img src="assets/demo_gifs/orbslam3_realtime_demo_readme.gif" alt="ORB-SLAM3 pseudo-real-time trajectory replay demo" width="640">
+
+Run locally with smoother presentation playback:
+
+```bash
+.venv/bin/python scripts/visualization/orbslam3_realtime_demo.py --sync-mode even
+```
 
 ## Current Implementation Status
 
 Completed:
 
 - DeepVO repository added under `src/models/deepvo/`.
-- DeepVO patched for MacBook M4 / Apple Silicon by replacing CUDA-specific code with device-aware PyTorch logic.
+- DeepVO patched for MacBook M4 / Apple Silicon with MPS or CPU fallback instead of hardcoded CUDA.
 - Custom videos converted into extracted frame sequences.
-- KITTI odometry grayscale data used with `image_0`.
-- DeepVO training completed on KITTI.
-- Trained checkpoint created locally at `outputs/checkpoints/deepvo_kitti/checkpoint_1.pth`.
-- Inference completed on custom indoor and outdoor videos.
-- Benchmark inference completed on KITTI sequences `04` and `06`.
-- Trajectory plots generated for custom and KITTI runs.
-- Report summary and notebook created.
+- KITTI grayscale odometry data used with `image_0`.
+- DeepVO training and inference completed.
+- DeepVO benchmark inference completed on KITTI sequences `04` and `06`.
+- ORB-SLAM3 added locally and built successfully on MacBook M4.
+- ORB-SLAM3 monocular custom-frame workflow created using a KITTI-style adapter.
+- ORB-SLAM3 headless `--no-viewer` workflow used to avoid Pangolin viewer crashes on macOS.
+- Indoor and outdoor custom ORB-SLAM3 TUM trajectory outputs generated.
+- Trajectory plots, summaries, notebooks, and pseudo-real-time replay demos created.
 
-Planned:
+Current note:
 
-- Add ORB-SLAM3 and compare it against the DeepVO baseline.
+- ORB-SLAM3 source/build files are kept local and excluded from GitHub because the full clone, vocabulary, Pangolin build, and binaries are large. The repository includes the project-level scripts, configs, summaries, plots, and small trajectory outputs needed to explain the workflow.
 
 ## Folder Structure
 
 ```text
 monocular_slam_project/
-├── data/
-│   ├── benchmark/          # Local benchmark datasets, excluded from GitHub
-│   └── custom/             # Local videos and extracted frames, excluded from GitHub
-├── notebooks/
-│   └── deepvo_project_demo.ipynb
+├── assets/
+│   └── demo_gifs/              # Optimized README demo GIFs
+├── configs/                    # Project-level model/settings files
+├── data/                       # Local datasets and videos, excluded from GitHub
+│   ├── benchmark/
+│   └── custom/
+├── notebooks/                  # Report/demo notebooks
 ├── outputs/
-│   ├── checkpoints/        # Local model checkpoints, excluded from GitHub
-│   ├── plots/deepvo/       # Report-ready trajectory plots
-│   └── trajectories/deepvo/# Trajectory CSV outputs
+│   ├── checkpoints/            # Local checkpoints, excluded from GitHub
+│   ├── plots/                  # Small report-ready trajectory plots
+│   └── trajectories/           # Small report-ready trajectory outputs
 ├── reports/
-│   └── drafts/             # Markdown summaries and project notes
+│   └── drafts/                 # Markdown project summaries
 ├── scripts/
-│   ├── preprocessing/      # Data preparation scripts
-│   ├── inference/          # DeepVO inference scripts
-│   └── visualization/      # Plotting scripts
+│   ├── preprocessing/          # Data preparation scripts
+│   ├── inference/              # DeepVO and ORB-SLAM3 runner scripts
+│   └── visualization/          # Plotting and replay demo scripts
 └── src/
     └── models/
-        └── deepvo/         # Patched DeepVO code
+        └── deepvo/             # Patched DeepVO code
 ```
 
 ## Setup
@@ -124,9 +158,7 @@ PYTORCH_ENABLE_MPS_FALLBACK=1 python main.py \
   --train_iter 1
 ```
 
-### 4. Run Inference on Custom Frames
-
-Example for the indoor custom sequence:
+### 4. Run DeepVO Inference on Custom Frames
 
 ```bash
 cd ../../..
@@ -136,48 +168,59 @@ PYTORCH_ENABLE_MPS_FALLBACK=1 python scripts/inference/run_deepvo_custom.py \
   --checkpoint outputs/checkpoints/deepvo_kitti/checkpoint_1.pth
 ```
 
-### 5. Run KITTI Benchmark Inference
+## ORB-SLAM3 Workflow
 
-Example for KITTI sequence `04`:
+ORB-SLAM3 was built locally under `src/models/orb_slam3/`, but the full source/build tree is excluded from GitHub due to size. The setup notes are documented in the project report and local ORB-SLAM3 setup file.
+
+Run ORB-SLAM3 on custom frames in headless mode:
 
 ```bash
-PYTORCH_ENABLE_MPS_FALLBACK=1 python scripts/inference/run_deepvo_kitti.py \
-  --kitti-root data/benchmark/kitti \
-  --sequence 04 \
-  --image-folder image_0 \
-  --checkpoint outputs/checkpoints/deepvo_kitti/checkpoint_1.pth \
-  --output-root outputs/trajectories/deepvo/kitti_benchmark \
-  --plot-root outputs/plots/deepvo/kitti_benchmark
+python scripts/inference/run_orbslam3_kitti_custom.py \
+  --sequence indoor_loop \
+  --fps 30 \
+  --no-viewer
+```
+
+Outdoor sequence:
+
+```bash
+python scripts/inference/run_orbslam3_kitti_custom.py \
+  --sequence outdoor_loop \
+  --fps 30 \
+  --no-viewer
+```
+
+The custom ORB-SLAM3 video settings are stored at:
+
+```text
+configs/orbslam3_custom_1280x720.yaml
 ```
 
 ## Outputs and Results
 
-DeepVO outputs are organized into three groups:
+DeepVO outputs are organized into:
 
 ```text
 outputs/trajectories/deepvo/custom_random/
 outputs/trajectories/deepvo/custom_trained/
 outputs/trajectories/deepvo/kitti_benchmark/
-```
-
-Trajectory plots are organized under:
-
-```text
 outputs/plots/deepvo/
 ```
 
-Completed result categories:
+ORB-SLAM3 outputs are organized into:
 
-- Random-weight custom runs for pipeline sanity checks.
-- Trained-checkpoint custom runs for indoor and outdoor videos.
-- KITTI benchmark runs on sequences `04` and `06`, including predicted and ground-truth trajectory CSV files.
+```text
+outputs/trajectories/orb_slam3/
+outputs/plots/orb_slam3/
+```
 
-Report-ready files:
+Report-ready files include:
 
 ```text
 reports/drafts/deepvo_summary.md
-reports/drafts/deepvo_results_notes.md
+reports/drafts/orbslam3_summary.md
 notebooks/deepvo_project_demo.ipynb
+notebooks/orbslam3_project_demo.ipynb
 ```
 
 ## Excluded from GitHub
@@ -191,16 +234,20 @@ Large or machine-specific files are intentionally excluded:
 - Python virtual environments
 - Python cache files
 - Jupyter checkpoint files
-- OS/editor temporary files
+- ORB-SLAM3 local source/build tree, vocabulary, Pangolin build, and binaries
+- Large root-level raw GIF/video exports
+- Logs and temporary generated adapter inputs
 
 This keeps the repository small, reproducible, and appropriate for GitHub.
 
 ## Notes
 
-DeepVO is a visual odometry method, not a full SLAM system. It estimates frame-to-frame motion and accumulates the result into a trajectory. Because it does not perform loop closure or global map correction, drift can accumulate over time.
+DeepVO is visual odometry, not full SLAM. It estimates frame-to-frame motion and accumulates the result into a trajectory, so drift can accumulate over time.
+
+ORB-SLAM3 is a full SLAM system, but this project uses its monocular mode. Monocular trajectories have arbitrary scale unless external scale information or calibration constraints are provided. On macOS, the Pangolin viewer was disabled and the project used headless trajectory export.
 
 ## Next Steps
 
-- Add ORB-SLAM3 as a classical feature-based SLAM baseline.
-- Run ORB-SLAM3 on the same custom videos and KITTI sequences where possible.
-- Compare DeepVO and ORB-SLAM3 in terms of trajectory shape, drift, setup complexity, and qualitative behavior.
+- Improve camera calibration for custom ORB-SLAM3 runs.
+- Add a concise comparison table for DeepVO vs ORB-SLAM3.
+- Export final report figures and PDFs from the notebooks and markdown summaries.
