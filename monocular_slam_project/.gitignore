@@ -8,8 +8,11 @@ __pycache__/
 .venv/
 venv/
 .env
+.cache/
 .ipynb_checkpoints/
 .pytest_cache/
+*.tmp
+*.bak
 
 # Build / logs
 *.log
@@ -23,10 +26,18 @@ data/custom/extracted_frames/
 outputs/checkpoints/
 outputs/logs/
 outputs/demos/
+*.pth
+*.pt
+*.ckpt
 
 # Large root-level screen recordings / raw demo exports
 /deepvo_realtime_demo.gif
 /orbslam3_realtime_demo.gif
+/*.mov
+/*.MOV
+/*.mp4
+/*.mkv
+/*.avi
 
 # ORB-SLAM3 local clone/build artifacts
 src/models/orb_slam3/
@@ -34,6 +45,7 @@ src/models/orb_slam3/
 # ORB-SLAM3 generated adapter inputs
 outputs/trajectories/orb_slam3/*/kitti_input/
 outputs/trajectories/orb_slam3/*/run_command.txt
+outputs/trajectories/orb_slam3/*/KeyFrameTrajectory.txt
 
 # Native/CMake build artifacts
 build/

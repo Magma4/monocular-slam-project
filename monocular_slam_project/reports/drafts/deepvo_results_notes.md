@@ -2,9 +2,7 @@
 
 This note summarizes the organized DeepVO outputs used for the semester project report.
 
-## Output Categories
-
-### Random Custom Results
+## Random Custom Results
 
 Folder:
 
@@ -12,7 +10,7 @@ Folder:
 outputs/trajectories/deepvo/custom_random/
 ```
 
-Contains DeepVO inference results on the custom videos before loading a trained checkpoint. These runs used random model weights, so they are useful only as a pipeline sanity check.
+These runs used random model weights. They are useful only as pipeline sanity checks for preprocessing, inference, CSV export, and plotting.
 
 Sequences:
 
@@ -28,7 +26,7 @@ outputs/plots/deepvo/custom_random/deepvo_custom_random_indoor_loop_trajectory.p
 outputs/plots/deepvo/custom_random/deepvo_custom_random_outdoor_loop_trajectory.png
 ```
 
-### Trained Custom Results
+## Trained Custom Results
 
 Folder:
 
@@ -36,7 +34,7 @@ Folder:
 outputs/trajectories/deepvo/custom_trained/
 ```
 
-Contains DeepVO inference results on the same custom videos after loading the trained KITTI checkpoint:
+These runs used the trained KITTI checkpoint:
 
 ```text
 outputs/checkpoints/deepvo_kitti/checkpoint_1.pth
@@ -47,6 +45,7 @@ Sequences:
 ```text
 outputs/trajectories/deepvo/custom_trained/indoor_loop/
 outputs/trajectories/deepvo/custom_trained/outdoor_loop/
+outputs/trajectories/deepvo/custom_trained/outdoor_loop2/
 ```
 
 Plots:
@@ -54,20 +53,15 @@ Plots:
 ```text
 outputs/plots/deepvo/custom_trained/deepvo_custom_trained_indoor_loop_trajectory.png
 outputs/plots/deepvo/custom_trained/deepvo_custom_trained_outdoor_loop_trajectory.png
+outputs/plots/deepvo/custom_trained/deepvo_custom_trained_outdoor_loop2_trajectory.png
 ```
 
-### KITTI Benchmark Results
+## KITTI Benchmark Results
 
 Folder:
 
 ```text
 outputs/trajectories/deepvo/kitti_benchmark/
-```
-
-Contains DeepVO inference results on KITTI odometry sequences using grayscale `image_0` frames and the trained checkpoint:
-
-```text
-outputs/checkpoints/deepvo_kitti/checkpoint_1.pth
 ```
 
 Sequences:
@@ -87,6 +81,7 @@ outputs/plots/deepvo/kitti_benchmark/deepvo_kitti_06_trajectory.png
 ## Interpretation Notes
 
 - Random custom runs should not be used as meaningful localization results.
-- Trained custom runs used `checkpoint_1.pth`, trained on KITTI, so they are better for demonstration but may still drift on custom videos.
+- Trained custom runs used `checkpoint_1.pth`, trained on KITTI, so they are better for demonstration but can still drift on custom videos.
 - KITTI benchmark runs are the clearest report comparison because KITTI provides ground-truth poses.
+- `outdoor_loop2` is useful as a long custom-video stress test, but it differs significantly from KITTI and should be discussed qualitatively.
 - DeepVO estimates visual odometry, so drift can accumulate over time because there is no loop closure or global map correction.
