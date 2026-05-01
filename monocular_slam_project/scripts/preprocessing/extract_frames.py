@@ -24,6 +24,15 @@ def parse_args():
     )
     parser.add_argument("video_path", help="Path to the input .mov or .mp4 video.")
     parser.add_argument("output_folder", help="Folder where extracted PNG frames are saved.")
+    parser.add_argument(
+        "--max-width",
+        type=int,
+        default=None,
+        help=(
+            "Optional maximum saved frame width. Frames wider than this are resized "
+            "while preserving aspect ratio."
+        ),
+    )
     return parser.parse_args()
 
 
@@ -39,7 +48,16 @@ def validate_video_path(video_path):
         )
 
 
-def extract_frames(video_path, output_folder):
+def resize_frame_if_needed(frame, max_width):
+    if max_width is None or frame.shape[1] <= max_width:
+        return frame
+
+    scale = max_width / frame.shape[1]
+    target_height = int(round(frame.shape[0] * scale))
+    return cv2.resize(frame, (max_width, target_height), interpolation=cv2.INTER_AREA)
+
+
+def extract_frames(video_path, output_folder, max_width=None):
     validate_video_path(video_path)
     output_folder.mkdir(parents=True, exist_ok=True)
 
@@ -55,10 +73,16 @@ def extract_frames(video_path, output_folder):
     fps = capture.get(cv2.CAP_PROP_FPS)
 
     frame_count = 0
+    saved_width = None
+    saved_height = None
     while True:
         success, frame = capture.read()
         if not success:
             break
+
+        frame = resize_frame_if_needed(frame, max_width)
+        if saved_width is None or saved_height is None:
+            saved_height, saved_width = frame.shape[:2]
 
         frame_path = output_folder / f"frame_{frame_count:06d}.png"
         if not cv2.imwrite(str(frame_path), frame):
@@ -68,7 +92,7 @@ def extract_frames(video_path, output_folder):
         frame_count += 1
 
     capture.release()
-    return frame_count, width, height, fps
+    return frame_count, width, height, saved_width, saved_height, fps
 
 
 def main():
@@ -77,7 +101,11 @@ def main():
     output_folder = Path(args.output_folder).expanduser()
 
     try:
-        frame_count, width, height, fps = extract_frames(video_path, output_folder)
+        frame_count, width, height, saved_width, saved_height, fps = extract_frames(
+            video_path,
+            output_folder,
+            args.max_width,
+        )
     except (FileNotFoundError, ValueError, RuntimeError) as error:
         print(f"Error: {error}", file=sys.stderr)
         sys.exit(1)
@@ -86,6 +114,8 @@ def main():
     print(f"Output folder: {output_folder}")
     print(f"Total frames extracted: {frame_count}")
     print(f"Input resolution: {width}x{height}")
+    if saved_width and saved_height:
+        print(f"Saved frame resolution: {saved_width}x{saved_height}")
     if fps and fps > 0:
         print(f"FPS: {fps:.2f}")
     else:

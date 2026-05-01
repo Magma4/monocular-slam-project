@@ -121,7 +121,7 @@ def parse_args():
     )
     parser.add_argument(
         "--sequence",
-        choices=["indoor_loop", "outdoor_loop"],
+        choices=["indoor_loop", "outdoor_loop", "outdoor_loop2"],
         help="Named sequence under data/custom/extracted_frames/.",
     )
     parser.add_argument(

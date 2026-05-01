@@ -1,0 +1,43 @@
+%YAML:1.0
+
+# ORB-SLAM3 monocular settings for outdoor_loop2 extracted frames.
+# The source video is portrait-oriented; frames were resized to 1280x2276.
+# This is an approximate smoke-test config, not a calibrated camera model.
+
+Camera.type: "PinHole"
+
+# Approximate pinhole intrinsics for 1280x2276 portrait video.
+# For best results, replace these values with real camera calibration.
+Camera.fx: 1280.0
+Camera.fy: 1280.0
+Camera.cx: 640.0
+Camera.cy: 1138.0
+
+Camera.k1: 0.0
+Camera.k2: 0.0
+Camera.p1: 0.0
+Camera.p2: 0.0
+
+Camera.fps: 24.0
+Camera.RGB: 1
+
+Camera.width: 1280
+Camera.height: 2276
+
+# Slightly feature-rich settings for custom phone/video frames.
+ORBextractor.nFeatures: 3000
+ORBextractor.scaleFactor: 1.2
+ORBextractor.nLevels: 8
+ORBextractor.iniThFAST: 10
+ORBextractor.minThFAST: 5
+
+Viewer.KeyFrameSize: 0.1
+Viewer.KeyFrameLineWidth: 1
+Viewer.GraphLineWidth: 1
+Viewer.PointSize: 2
+Viewer.CameraSize: 0.15
+Viewer.CameraLineWidth: 2
+Viewer.ViewpointX: 0
+Viewer.ViewpointY: -10
+Viewer.ViewpointZ: -0.1
+Viewer.ViewpointF: 2000

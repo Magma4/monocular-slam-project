@@ -3,17 +3,10 @@
 
 import argparse
 import csv
+import os
 import sys
+import tempfile
 from pathlib import Path
-
-try:
-    import matplotlib.pyplot as plt
-except ImportError:
-    print(
-        "Error: matplotlib is not installed. Run `python -m pip install -r requirements.txt`.",
-        file=sys.stderr,
-    )
-    sys.exit(1)
 
 
 COORDINATE_PAIRS = [
@@ -81,6 +74,21 @@ def column_values(rows, column_name):
 
 
 def plot_trajectory(csv_path, output_path, title):
+    try:
+        cache_root = Path(tempfile.gettempdir()) / "monocular_slam_matplotlib"
+        os.environ.setdefault("MPLCONFIGDIR", str(cache_root / "config"))
+        os.environ.setdefault("XDG_CACHE_HOME", str(cache_root / "cache"))
+        import matplotlib
+
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+    except ImportError:
+        print(
+            "Error: matplotlib is not installed. Run `python -m pip install -r requirements.txt`.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
     fieldnames, rows = read_rows(csv_path)
     x_column, y_column = choose_coordinate_columns(fieldnames)
     x_values = column_values(rows, x_column)
